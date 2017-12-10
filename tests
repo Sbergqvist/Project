@@ -106,9 +106,11 @@ choice = gets.chomp.to_i
 																	n.puts("1")
 																	
 																	n.close
-																	puts "This was supposed to be a success"
-																else
-																	puts "Not success"
+																else 
+																currentfolderpath = Dir.pwd
+																	n = File.open("#{currentfolderpath}/results/testresults_#{@username}.to_yaml",'a+')
+																	n.puts("#{@username}")
+																	n.puts("0")
 																end
 																
 																	end
