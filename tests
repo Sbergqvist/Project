@@ -1,0 +1,224 @@
+require 'yaml'																#Requests the YAML gem
+require 'FileUtils'															#Requests the FileUtils gem
+
+currentfolderpath = Dir.pwd													#Sets Dir.pwd to Currentfolderpath variable
+if Dir.exist?("#{currentfolderpath}/results") == true						#Checks if the results folder exists, if not creates it.
+else
+	FileUtils.mkdir_p("#{currentfolderpath}/results")
+end
+	
+
+class Testing 																#Initalizes the test
+	def initialize(newuser, newtestsubject, correctanswer, testchoice, username, submenu, testresults_, adminstudent, userlist)
+		@newuser = newuser
+		@newtestsubject	= newtestsubject
+		@correctanswer	= correctanswer
+		@testchoice	= testchoice
+		@username = username
+		@submenu = submenu
+		@testresults_ = testresults
+		@adminstudent = adminstudent
+		@userlist = userlist
+	end
+
+
+choice = ""
+while choice != 3
+
+puts "-------------- MENU --------------"			#The mainmenu, listing all the options, in here is also the secret admin menu
+puts "Press 1 to create a student user"
+puts "Press 2 to Login with current user"
+puts "Press 3 to exit"
+puts "(To access to the super secret admin menu, type 666, the password will be BEIT)"
+choice = gets.chomp.to_i
+	if choice == 1									#User creation
+	puts "Enter your new Username"
+	@newuser = gets.chomp
+	puts "Write the password you want"
+	newpass = gets.chomp
+
+
+	f = File.new("#{@newuser}.txt","w")	
+	open("#{@newuser}.txt","w")
+	f.puts(@newuser,newpass)
+	f.close
+	
+	x = File.new("userlist.txt","w")
+	open("userlist.txt","w")
+	x.puts(@newuser)
+	x.close
+	puts "User was created"
+	end
+	
+		
+	
+		if choice == 2
+		puts "What is your username?"
+		@username = gets.chomp.to_s
+
+			if File.exists?("#{@username}.txt")
+			puts "What is your password?"
+			userpassword = gets.chomp
+			lines = File.read("#{@username}.txt")
+					if lines.include?(userpassword)
+					@submenu = ""
+					
+
+					
+					
+					while @submenu != 3						#Menu for a logged in user
+					puts "-------------- WELCOME --------------"
+					puts "You have three options"
+					puts "Press 1 to take a test"
+					puts "press 2 to see your results"
+					puts "press 3 to exit"
+					puts "(To access to the super secret admin menu, type 666	, the password will be BEIT)"
+					@submenu = gets.chomp.to_i
+					
+						if @submenu == 1					#Lists the tests
+					
+		puts "Here's a list of all tests"
+		open("test_list.to_yaml", "r").each_line do |line|
+				puts line
+				
+												end
+											
+						
+												
+															puts "Choose a test from the list by typing the number according to the test list"
+															@testchoice = gets.chomp
+															
+															open("test_#{@testchoice}.to_yaml", "r").each_line do |line|
+															puts line
+																												end
+																												
+																												
+															puts "Type in the correct answer directly as it is written"				#Correct answer selection
+															@testanswer = gets.chomp.downcase
+															
+															File.open("test_answers.to_yaml", "r") do |f|
+
+															f.any? do |line|
+																if line.include?("#{@testanswer}")
+																	currentfolderpath = Dir.pwd
+																	n = File.open("#{currentfolderpath}/results/testresults_#{@username}.to_yaml",'a+')
+																	n.puts("#{@username}")
+																	n.puts("1")
+																	
+																	n.close
+																	puts "This was supposed to be a success"
+																else
+																	puts "Not success"
+																end
+																
+																	end
+																								end
+	
+					end
+if @submenu == 2							#See test results
+currentfolderpath = Dir.pwd
+filename = ("#{currentfolderpath}/results/testresults_#{@username}.to_yaml")
+ 
+sum = 0
+fh = open filename
+fh.each do |line|
+   sum += line.to_i
+end
+fh.close
+ 
+puts "Your total amount of correct answers are: #{sum}"
+						end
+					end
+end
+
+end
+end
+				
+			
+		
+if choice == 666										#super secret admin menu
+		puts "Super secret password please"
+		adminpassword = gets.chomp.to_s.upcase
+		if adminpassword != "BEIT"
+		puts "Incorrect password!"
+		else 
+		puts "Correct password!"
+		adminchoice = ""
+		
+			while adminchoice != 3
+		
+		puts "--------------Administrator menu --------------"
+		puts "Press 1 to create a multiple choice test"
+		puts "Press 2 to see the results of the current tests"
+		puts "press 3 to exit"
+		
+		adminchoice = gets.chomp.to_i
+			
+		
+		if adminchoice == 1						#Test creation goes here
+		
+			puts "Which subject does the test cover?"
+		@newtestsubject = gets.chomp.to_s
+			
+			puts "Write your question"
+			firstquestion = gets.chomp.to_s
+			puts "The first of four possible answers"
+			firstanswer = gets.chomp.to_s
+			puts "The second of four possible answers"
+			secondanswer = gets.chomp.to_s
+			puts "The third of four possible answers"
+			thirdanswer = gets.chomp.to_s
+			puts "The fourth of four possible answers"
+			fourthanswer = gets.chomp.to_s
+			puts "What is the correct answer for the question? please type in the full name"
+			@correctanswer = gets.chomp.to_s
+			
+			
+			
+		n = File.new("test_#{@newtestsubject}.to_yaml","w")
+		open("#{@newtestsubject}.to_yaml","w")
+		n.puts(("#{@newtestsubject}"),firstquestion,firstanswer,secondanswer,thirdanswer,fourthanswer)
+		n.close
+		puts "Saved your test"
+		
+		n = File.open("test_list.to_yaml","a+")
+		open("test_list.to_yaml","a+")
+		n.puts("#{@newtestsubject}")
+		n.close
+		
+		n = File.new("test_answers.to_yaml","a+")
+		open("test_list.to_yaml","a+")
+		n.puts("#{@correctanswer}")
+		n.close
+			
+		end	
+		
+		if adminchoice == 2
+		currentfolderpath = Dir.pwd
+		
+		
+		open("userlist.txt", "r").each_line do |line|
+				puts line
+				
+												end
+		puts "Choose the name of one of your students"
+		@adminstudent = gets.chomp
+		
+		
+															filename = ("#{currentfolderpath}/results/testresults_#{@adminstudent}.to_yaml")
+ 
+sum = 0
+fh = open filename
+fh.each do |line|
+   sum += line.to_i
+   end
+	fh.close																
+															
+puts "This student had this amount of correct answers in his tests #{sum}"	 
+  
+end
+			end
+end
+end
+end
+end
